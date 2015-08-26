@@ -797,7 +797,13 @@ static void sync_clock_to_slave(Clock *c, Clock *slave)
         set_clock(c, slave_clock, slave->serial);
 }
 
+
+//acp
 static int get_master_sync_type(VideoState *is) {
+
+	    is->av_sync_type = AV_SYNC_VIDEO_MASTER;
+            return AV_SYNC_VIDEO_MASTER;
+/*
     if (is->av_sync_type == AV_SYNC_VIDEO_MASTER) {
         if (is->video_st)
             return AV_SYNC_VIDEO_MASTER;
@@ -810,7 +816,7 @@ static int get_master_sync_type(VideoState *is) {
             return AV_SYNC_EXTERNAL_CLOCK;
     } else {
         return AV_SYNC_EXTERNAL_CLOCK;
-    }
+    }*/
 }
 
 /* get the current master clock value */
@@ -1004,7 +1010,8 @@ retry:
             lastvp = frame_queue_peek_last(&is->pictq);
             vp = frame_queue_peek(&is->pictq);
 
-            if (vp->serial != is->videoq.serial) {
+	    ///acp 
+            if ((vp->serial != is->videoq.serial) || (frame_queue_nb_remaining(&is->pictq) > 1)) {
                 frame_queue_next(&is->pictq);
                 redisplay = 0;
                 goto retry;
@@ -3458,7 +3465,7 @@ void ffp_toggle_buffering_l(FFPlayer *ffp, int buffering_on)
     VideoState *is = ffp->is;
     if (buffering_on && !is->buffering_on) {
         av_log(ffp, AV_LOG_DEBUG, "ffp_toggle_buffering_l: start\n");
-        is->buffering_on = 1;
+        is->buffering_on = 0;
         stream_update_pause_l(ffp);
         ffp_notify_msg1(ffp, FFP_MSG_BUFFERING_START);
     } else if (!buffering_on && is->buffering_on){
