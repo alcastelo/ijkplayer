@@ -2,7 +2,9 @@ LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 LOCAL_MODULE := libavcodec
 LOCAL_SRC_FILES := $(MY_APP_FFMPEG_OUTPUT_PATH)/lib/libavcodec.a
-include $(PREBUILT_STATIC_LIBRARY)
+#include $(PREBUILT_STATIC_LIBRARY)
+include $(PREBUILT_STATIC_LIBRARY) 
+
 
 include $(CLEAR_VARS)
 LOCAL_MODULE := libavformat

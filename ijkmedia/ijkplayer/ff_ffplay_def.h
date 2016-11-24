@@ -66,7 +66,7 @@
 #include "ff_ffpipenode.h"
 
 #ifdef USE_IJK_BUFERING
-#define DEFAULT_HIGH_WATER_MARK_IN_BYTES        (256 * 1024)
+#define DEFAULT_HIGH_WATER_MARK_IN_BYTES        (16 * 1024)	//256*1024
 
 /*
  * START: buffering after prepared/seeked
@@ -74,14 +74,14 @@
  * MAX:   ...
  */
 #define DEFAULT_START_HIGH_WATER_MARK_IN_MS     (100)
-#define DEFAULT_NEXT_HIGH_WATER_MARK_IN_MS      (1 * 1000)
-#define DEFAULT_MAX_HIGH_WATER_MARK_IN_MS       (5 * 1000)
+#define DEFAULT_NEXT_HIGH_WATER_MARK_IN_MS      (1 * 100)    //1*1000
+#define DEFAULT_MAX_HIGH_WATER_MARK_IN_MS       (5 * 100)	//5*1000
 
-#define BUFFERING_CHECK_PER_BYTES               (512)
-#define BUFFERING_CHECK_PER_MILLISECONDS        (500)
+#define BUFFERING_CHECK_PER_BYTES               (256)		//512
+#define BUFFERING_CHECK_PER_MILLISECONDS        (250)		//500
 
 #define MAX_QUEUE_SIZE (15 * 1024 * 1024)
-#define MIN_FRAMES 50000
+#define MIN_FRAMES 10				//5000
 #else
 #define MAX_QUEUE_SIZE (15 * 1024 * 1024)
 #define MIN_FRAMES 5
@@ -102,7 +102,7 @@
 #define AV_NOSYNC_THRESHOLD 100.0
 
 /* maximum audio speed change to get correct sync */
-#define SAMPLE_CORRECTION_PERCENT_MAX 10
+#define SAMPLE_CORRECTION_PERCENT_MAX 99 //10
 
 /* external clock speed adjustment constants for realtime sources based on buffer fullness */
 #define EXTERNAL_CLOCK_SPEED_MIN  0.900

@@ -81,10 +81,6 @@
 
 #define FFP_IO_STAT_STEP (50 * 1024)
 
-
-int sample_correction_precent = SAMPLE_CORRECTION_PERCENT_MAX;
-
-
 static int ffp_format_control_message(struct AVFormatContext *s, int type,
                                       void *data, size_t data_size);
 
@@ -1739,7 +1735,6 @@ static void update_sample_display(VideoState *is, short *samples, int samples_si
  * or external master clock */
 static int synchronize_audio(VideoState *is, int nb_samples)
 {
-
     int wanted_nb_samples = nb_samples;
 
     /* if not master, then we try to remove or add samples to correct the clock */
@@ -1760,17 +1755,10 @@ static int synchronize_audio(VideoState *is, int nb_samples)
 
                 if (fabs(avg_diff) >= is->audio_diff_threshold) {
                     wanted_nb_samples = nb_samples + (int)(diff * is->audio_src.freq);
-		    //acp
-//                    min_nb_samples = ((nb_samples * (100 - SAMPLE_CORRECTION_PERCENT_MAX) / 100));
-//                    max_nb_samples = ((nb_samples * (100 + SAMPLE_CORRECTION_PERCENT_MAX) / 100));
-                    min_nb_samples = ((nb_samples * (100 - sample_correction_precent ) / 100));
-                    max_nb_samples = ((nb_samples * (100 + sample_correction_precent ) / 100));
+                    min_nb_samples = ((nb_samples * (100 - SAMPLE_CORRECTION_PERCENT_MAX) / 100));
+                    max_nb_samples = ((nb_samples * (100 + SAMPLE_CORRECTION_PERCENT_MAX) / 100));
                     wanted_nb_samples = av_clip(wanted_nb_samples, min_nb_samples, max_nb_samples);
-                } else{
-		    //acp
-		    sample_correction_precent = 4;
-
-		}
+                }
                 av_log(NULL, AV_LOG_TRACE, "diff=%f adiff=%f sample_diff=%d apts=%0.3f %f\n",
                         diff, avg_diff, wanted_nb_samples - nb_samples,
                         is->audio_clock, is->audio_diff_threshold);
@@ -1810,16 +1798,6 @@ static int audio_decode_frame(FFPlayer *ffp)
             return -1;
         frame_queue_next(&is->sampq);
     } while (af->serial != is->audioq.serial);
-
-    //acp
-//  double diff=0;
-//  diff = get_clock(&is->audclk) - get_master_clock(is);
-//  if ((diff>20)||(diff<20)) {
-//      frame_queue_next(&is->sampq);
-//  }
-
-//acp
-//    } while (af->serial != is->audioq.serial);
 
     data_size = av_samples_get_buffer_size(NULL, av_frame_get_channels(af->frame),
                                            af->frame->nb_samples,
@@ -2351,10 +2329,6 @@ static int read_thread(void *arg)
         av_log(ffp, AV_LOG_WARNING, "remove 'timeout' option for rtmp.\n");
         av_dict_set(&ffp->format_opts, "timeout", NULL, 0);
     }
-    //acp
-    av_log(ffp, AV_LOG_WARNING,"acp angel 1");
-
-
     err = avformat_open_input(&ic, is->filename, is->iformat, &ffp->format_opts);
     if (err < 0) {
         last_error = err; // store the err code
@@ -2362,9 +2336,6 @@ static int read_thread(void *arg)
         ret = -1;
         goto fail;
     }
-
-    av_log(ffp, AV_LOG_WARNING,"acp angel 2");
-
     if (scan_all_pmts_set)
         av_dict_set(&ffp->format_opts, "scan_all_pmts", NULL, AV_DICT_MATCH_CASE);
 
@@ -2377,33 +2348,15 @@ static int read_thread(void *arg)
     }
     is->ic = ic;
 
-    av_log(ffp, AV_LOG_WARNING,"acp angel 3");
-
-
     if (ffp->genpts)
         ic->flags |= AVFMT_FLAG_GENPTS;
 
     av_format_inject_global_side_data(ic);
 
-    av_log(ffp, AV_LOG_WARNING,"acp angel 31");
-
     opts = setup_find_stream_info_opts(ic, ffp->codec_opts);
     orig_nb_streams = ic->nb_streams;
 
-    av_log(ffp, AV_LOG_WARNING,"acp angel 32");
-
-
-    //acp
-	
-    ic->max_analyze_duration2=15;
-    ic->fps_probe_size =15;
-    ic->format_probesize=1024*15;
-    ic->probesize2=1024*15;
-
     err = avformat_find_stream_info(ic, opts);
-
-    av_log(ffp, AV_LOG_WARNING,"acp angel 4");
-
 
     for (i = 0; i < orig_nb_streams; i++)
         av_dict_free(&opts[i]);
@@ -2416,15 +2369,11 @@ static int read_thread(void *arg)
         goto fail;
     }
 
-    av_log(ffp, AV_LOG_WARNING,"acp angel 5");
-
     if (ic->pb)
         ic->pb->eof_reached = 0; // FIXME hack, ffplay maybe should not use avio_feof() to test for the end
 
     if (ffp->seek_by_bytes < 0)
         ffp->seek_by_bytes = !!(ic->iformat->flags & AVFMT_TS_DISCONT) && strcmp("ogg", ic->iformat->name);
-
-    av_log(ffp, AV_LOG_WARNING,"acp angel 6");
 
     is->max_frame_duration = (ic->iformat->flags & AVFMT_TS_DISCONT) ? 10.0 : 3600.0;
     av_log(ffp, AV_LOG_INFO, "max_frame_duration: %.3f\n", is->max_frame_duration);
@@ -2845,10 +2794,6 @@ static int read_thread(void *arg)
 static int video_refresh_thread(void *arg);
 static VideoState *stream_open(FFPlayer *ffp, const char *filename, AVInputFormat *iformat)
 {
-
-    //acp
-    sample_correction_precent = SAMPLE_CORRECTION_PERCENT_MAX;
-
     assert(!ffp->is);
     VideoState *is;
 
@@ -2981,7 +2926,6 @@ static bool g_ffmpeg_global_inited = false;
 inline static int log_level_av_to_ijk(int av_level)
 {
     int ijk_level = IJK_LOG_VERBOSE;
-//    av_level=AV_LOG_TRACE;
     if      (av_level <= AV_LOG_PANIC)      ijk_level = IJK_LOG_FATAL;
     else if (av_level <= AV_LOG_FATAL)      ijk_level = IJK_LOG_FATAL;
     else if (av_level <= AV_LOG_ERROR)      ijk_level = IJK_LOG_ERROR;
@@ -2998,7 +2942,6 @@ inline static int log_level_av_to_ijk(int av_level)
 inline static int log_level_ijk_to_av(int ijk_level)
 {
     int av_level = IJK_LOG_VERBOSE;
-//    ijk_level=IJK_LOG_VERBOSE;
     if      (ijk_level >= IJK_LOG_SILENT)   av_level = AV_LOG_QUIET;
     else if (ijk_level >= IJK_LOG_FATAL)    av_level = AV_LOG_FATAL;
     else if (ijk_level >= IJK_LOG_ERROR)    av_level = AV_LOG_ERROR;

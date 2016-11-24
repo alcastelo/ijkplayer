@@ -59,18 +59,19 @@ case "$FF_NDK_REL" in
             echo "NDKr$FF_NDK_REL detected"
         else
             echo "You need the NDKr9 or later"
-            exit 1
+#            exit 1
         fi
     ;;
     *)
         echo "You need the NDKr9 or later"
-        exit 1
+#        exit 1
     ;;
 esac
 
 FF_BUILD_ROOT=`pwd`
 FF_ANDROID_PLATFORM=android-9
-FF_GCC_VER=4.8
+#FF_GCC_VER=4.8
+FF_GCC_VER=4.9
 FF_GCC_64_VER=4.9
 
 
@@ -274,6 +275,12 @@ FF_CFG_FLAGS="$FF_CFG_FLAGS --enable-pic"
 FF_CFG_FLAGS="$FF_CFG_FLAGS --enable-asm"
 FF_CFG_FLAGS="$FF_CFG_FLAGS --enable-inline-asm"
 
+
+FF_CFG_FLAGS="$FF_CFG_FLAGS --enable-libspeex"
+#FF_DEP_LIBS="-L/home/angel/tmp/ttt/obj/local/arm64-v8a/ -L/home/angel/tmp/ttt/obj/local/x86-64/ -L/home/angel/tmp/ttt/obj/local/armeabi-v7a/ -lspeex "
+#FF_DEP_LIBS="$FF_DEP_LIBS -lspeex"
+
+
 #--------------------
 echo ""
 echo "--------------------"
@@ -284,6 +291,9 @@ if [ -f "./config.h" ]; then
     echo 'reuse configure'
 else
     which $CC
+    echo $FF_CFG_FLAGS
+    echo $FF_CFLAGS $FF_EXTRA_CFLAGS
+    echo $FF_DEP_LIBS $FF_EXTRA_LDFLAGS
     ./configure $FF_CFG_FLAGS \
         --extra-cflags="$FF_CFLAGS $FF_EXTRA_CFLAGS" \
         --extra-ldflags="$FF_DEP_LIBS $FF_EXTRA_LDFLAGS"
@@ -296,5 +306,7 @@ echo "--------------------"
 echo "[*] compile ffmpeg"
 echo "--------------------"
 cp config.* $FF_PREFIX
-make $FF_MAKEFLAGS
+echo $FF_PREFIX >./txtgel2.txt
+echo $FF_MAKEFLAGS >./txtgel.txt
+make $FF_MAKEFLAGS 
 make install
