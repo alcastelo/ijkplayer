@@ -27,7 +27,7 @@ LOCAL_PATH := $(call my-dir)
 #LOCAL_SRC_FILES := libspeex.so
 #include $(PREBUILT_SHARED_LIBRARY)
 
-
+APP_ALLOW_MISSING_DEPS=true
 
 
 LOCAL_PATH := $(call my-dir)
@@ -39,10 +39,10 @@ ifeq ($(TARGET_ARCH_ABI),armeabi-v7a)
 LOCAL_CFLAGS += -mfloat-abi=soft
 endif
 LOCAL_CFLAGS += -std=c99
-#armv7
-LOCAL_LDLIBS += -llog -landroid -lm -lz -L/home/angel/tmp/ttt/obj/local/armeabi-v7a/  -lspeex
-#amrv64
-#LOCAL_LDLIBS += -llog -landroid -lm -lz -L/home/angel/tmp/ttt/obj/local/arm64-v8a/ -lspeex
+#armv7 descomentar para compilar la libreria con speex para v7
+#LOCAL_LDLIBS += -llog -landroid -lm -lz -L/home/angel/tmp/ttt/obj/local/armeabi-v7a/  -lspeex
+#amrv64 descomentar para compilar la libreria con speex para arm64
+LOCAL_LDLIBS += -llog -landroid -lm -lz -L/home/angel/tmp/ttt/obj/local/arm64-v8a/ -lspeex
 #original
 #LOCAL_LDLIBS += -llog -landroid -lm -lz 
 

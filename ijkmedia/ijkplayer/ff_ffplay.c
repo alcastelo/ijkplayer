@@ -2352,7 +2352,7 @@ static int read_thread(void *arg)
         av_dict_set(&ffp->format_opts, "timeout", NULL, 0);
     }
     //acp
-    av_log(ffp, AV_LOG_WARNING,"acp angel 1");
+    //av_log(ffp, AV_LOG_WARNING,"acp angel 1");
 
 
     err = avformat_open_input(&ic, is->filename, is->iformat, &ffp->format_opts);
@@ -2363,7 +2363,7 @@ static int read_thread(void *arg)
         goto fail;
     }
 
-    av_log(ffp, AV_LOG_WARNING,"acp angel 2");
+    //av_log(ffp, AV_LOG_WARNING,"acp angel 2");
 
     if (scan_all_pmts_set)
         av_dict_set(&ffp->format_opts, "scan_all_pmts", NULL, AV_DICT_MATCH_CASE);
@@ -2377,7 +2377,7 @@ static int read_thread(void *arg)
     }
     is->ic = ic;
 
-    av_log(ffp, AV_LOG_WARNING,"acp angel 3");
+    //av_log(ffp, AV_LOG_WARNING,"acp angel 3");
 
 
     if (ffp->genpts)
@@ -2385,24 +2385,30 @@ static int read_thread(void *arg)
 
     av_format_inject_global_side_data(ic);
 
-    av_log(ffp, AV_LOG_WARNING,"acp angel 31");
+    //av_log(ffp, AV_LOG_WARNING,"acp angel 31");
 
     opts = setup_find_stream_info_opts(ic, ffp->codec_opts);
     orig_nb_streams = ic->nb_streams;
 
-    av_log(ffp, AV_LOG_WARNING,"acp angel 32");
+    //av_log(ffp, AV_LOG_WARNING,"acp angel 32");
 
 
-    //acp
-	
-    ic->max_analyze_duration2=15;
-    ic->fps_probe_size =15;
-    ic->format_probesize=1024*15;
-    ic->probesize2=1024*15;
+    //acp configuracion para conexion rapida con omni	
+    //ic->max_analyze_duration2=15;
+    //ic->fps_probe_size =15;
+    //ic->format_probesize=1024*15;
+    //ic->probesize2=1024*15;
+    
+    //acp configuracion mas lenta para los clientes flash de bildtec
+    ic->max_analyze_duration2=30;
+    ic->fps_probe_size =30;
+    ic->format_probesize=1024*30;
+    ic->probesize2=1024*30;
+
 
     err = avformat_find_stream_info(ic, opts);
 
-    av_log(ffp, AV_LOG_WARNING,"acp angel 4");
+    //av_log(ffp, AV_LOG_WARNING,"acp angel 4");
 
 
     for (i = 0; i < orig_nb_streams; i++)
@@ -2416,7 +2422,7 @@ static int read_thread(void *arg)
         goto fail;
     }
 
-    av_log(ffp, AV_LOG_WARNING,"acp angel 5");
+    //av_log(ffp, AV_LOG_WARNING,"acp angel 5");
 
     if (ic->pb)
         ic->pb->eof_reached = 0; // FIXME hack, ffplay maybe should not use avio_feof() to test for the end
@@ -2424,7 +2430,7 @@ static int read_thread(void *arg)
     if (ffp->seek_by_bytes < 0)
         ffp->seek_by_bytes = !!(ic->iformat->flags & AVFMT_TS_DISCONT) && strcmp("ogg", ic->iformat->name);
 
-    av_log(ffp, AV_LOG_WARNING,"acp angel 6");
+    //av_log(ffp, AV_LOG_WARNING,"acp angel 6");
 
     is->max_frame_duration = (ic->iformat->flags & AVFMT_TS_DISCONT) ? 10.0 : 3600.0;
     av_log(ffp, AV_LOG_INFO, "max_frame_duration: %.3f\n", is->max_frame_duration);

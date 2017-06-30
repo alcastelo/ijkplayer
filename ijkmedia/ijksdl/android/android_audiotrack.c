@@ -130,7 +130,9 @@ int SDL_Android_AudioTrack_global_init(JNIEnv *env)
 {
     jclass clazz;
 
-    clazz = (*env)->FindClass(env, "android/media/AudioTrack");
+//    clazz = (*env)->FindClass(env, "android/media/AudioTrack");
+
+    clazz = (*env)->FindClass(env, "es/scioit/omni1/APM/APMAudioTrack");
     IJK_CHECK_RET(clazz, -1, "missing AudioTrack");
 
     // FindClass returns LocalReference
